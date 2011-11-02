@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'jetty'
+apply plugin: 'groovy'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'javax.servlet:servlet-api:2.5'
+	compile 'javax.servlet:jsp-api:2.0'
+	groovy 'org.codehaus.groovy:groovy-all:1.8.3'
+	testCompile 'org.spockframework:spock-core:0.5-groovy-1.8'
+	testCompile 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.1'
+}
+
+[jettyRun, jettyRunWar]*.contextPath = '/'
+//[jettyRun, jettyRunWar]*.httpPort = 8080
+
+task jettyDaemon << {
+	[jettyRun, jettyRunWar]*.daemon = true
+}
+
+task webTest << {
+	dependsOn << 'jettyDaemon'
+	dependsOn << 'jettyRunWar'
+	dependsOn << 'test'
+}
